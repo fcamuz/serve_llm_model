@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spacy-ner-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spacy-ner
+  template:
+    metadata:
+      labels:
+        app: spacy-ner
+    spec:
+      imagePullSecrets:
+      - name: acr-secret  
+      containers:
+      - name: spacy-ner
+        image: spacyllm.azurecr.io/spacy-ner-api:latest
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spacy-ner-service
+spec:
+  selector:
+    app: spacy-ner
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer
+
